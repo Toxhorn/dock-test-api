@@ -33,7 +33,7 @@ export default class AccountService {
   async getOne (id) {
     const result = await this.accountRepository.findOne(id)
 
-    if (!result) throw new Error('Cannot find an account with id ' + id)
+    if (!result) throw new Error(`Cannot find an account with id ${id}`)
 
     result.saldo = parseFloat(result.saldo)
     result.limiteSaqueDiario = parseFloat(result.limiteSaqueDiario)
@@ -45,7 +45,7 @@ export default class AccountService {
 
     // Check if person exists
     const personExists = await this.personRepository.findOne(account.idPessoa)
-    if (!personExists) throw new Error('Cannot find a person with id ' + account.idPessoa)
+    if (!personExists) throw new Error(`Cannot find a person with id ${account.idPessoa}`)
 
     // Check if this person has an account
     const accountExists = await this.accountRepository.findByPerson(account.idPessoa)

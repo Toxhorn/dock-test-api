@@ -38,7 +38,7 @@ export default class PersonService {
 
   async getOne (id) {
     const result = await this.personRepository.findOne(id)
-    if (!result) throw new Error('Cannot find a person with id ' + id)
+    if (!result) throw new Error(`Cannot find a person with ${id}`)
     return result
   }
 

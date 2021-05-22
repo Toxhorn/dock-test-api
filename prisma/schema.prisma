@@ -36,4 +36,5 @@ model Transacao {
   idConta           Int
   valor             Decimal
   dataTransacao     DateTime
+  tipoTransacao     Int
 }

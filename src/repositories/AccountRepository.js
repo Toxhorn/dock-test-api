@@ -21,4 +21,11 @@ export default class AccountRepository {
   async create (account) {
     return await this.accounts.create({ data: account })
   }
+
+  async updateTotal (accountId, total) {
+    return await this.accounts.update({
+      where: { idConta: accountId },
+      data: { saldo: total }
+    })
+  }
 }
