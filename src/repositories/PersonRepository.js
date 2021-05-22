@@ -1,7 +1,7 @@
 import Prisma from '@prisma/client'
 const { PrismaClient } = Prisma
 
-export default class Person {
+export default class PersonRepository {
   constructor () {
     this.persons = new PrismaClient().pessoa
   }

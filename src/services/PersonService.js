@@ -4,7 +4,7 @@ import moment from 'moment'
 import validationUtils from '../utils/validationUtils.js'
 import PersonRepository from '../repositories/PersonRepository.js'
 
-export default class Person {
+export default class PersonService {
   constructor () {
     this.personRepository = new PersonRepository()
   }
@@ -36,8 +36,10 @@ export default class Person {
     return this.personRepository.findAll()
   }
 
-  getOne (id) {
-    return this.personRepository.findOne(id)
+  async getOne (id) {
+    const result = await this.personRepository.findOne(id)
+    if (!result) throw new Error('Cannot find a person with id ' + id)
+    return result
   }
 
   create (person) {

@@ -1,10 +1,10 @@
-import PersonSevice from '../services/PersonService.js'
+import PersonService from '../services/PersonService.js'
 
 export default (app) => {
   app.get('/person', async (req, res, next) => {
     try {
-      const personService = new PersonSevice()
-      const result = await personService.getAll()
+      const service = new PersonService()
+      const result = await service.getAll()
       res.json(result)
     } catch (error) {
       next(error)
@@ -13,8 +13,8 @@ export default (app) => {
 
   app.get('/person/:id', async (req, res, next) => {
     try {
-      const personService = new PersonSevice()
-      const result = await personService.getOne(req.params.id)
+      const service = new PersonService()
+      const result = await service.getOne(req.params.id)
       res.json(result)
     } catch (error) {
       next(error)
@@ -23,8 +23,8 @@ export default (app) => {
 
   app.post('/person', async (req, res, next) => {
     try {
-      const personService = new PersonSevice()
-      const result = await personService.create(req.body)
+      const service = new PersonService()
+      const result = await service.create(req.body)
       res.json(result)
     } catch (error) {
       next(error)

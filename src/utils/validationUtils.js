@@ -24,5 +24,10 @@ export default {
 
   date: (value, format = 'YYYY-MM-DD') => {
     return moment(value, format, true).isValid()
+  },
+
+  money: (value) => {
+    if (typeof value === 'string') return false
+    return value.toString().match(/^\d*(.\d{0,2})?$/)
   }
 }
