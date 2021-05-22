@@ -1,0 +1,27 @@
+version: "3"
+
+services:
+  db:
+    container_name: postgres
+    image: postgres:13.3-alpine
+    environment: 
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./data/postgres:/var/lib/postgresql/data
+
+  web:
+    container_name: dock-api
+    image: node:14-alpine
+    working_dir: /dock-api
+    depends_on:
+      - "db"
+    volumes:
+      - ./:/dock-api
+    command: sh ./post-install.sh
+    ports: 
+      - "4000:4000"
+    links: 
+      - "db"
