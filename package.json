@@ -6,7 +6,7 @@
   "scripts": {
     "start": "node src/app.js",
     "start-dev": "nodemon src/app.js",
-    "seed": "prisma db seed --preview-feature"
+    "test": "node --experimental-vm-modules node_modules/.bin/jest --collect-coverage"
   },
   "dependencies": {
     "@prisma/client": "^2.23.0",
@@ -15,9 +15,15 @@
     "moment": "^2.29.1"
   },
   "devDependencies": {
+    "jest": "^26.6.3",
     "nodemon": "^2.0.7",
     "prisma": "^2.23.0"
   },
   "author": "Carlos Henrique",
-  "license": "MIT"
+  "license": "MIT",
+  "standard": {
+    "envs": [
+      "jest"
+    ]
+  }
 }

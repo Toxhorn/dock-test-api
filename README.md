@@ -14,7 +14,7 @@ $ npm i
 ```
 Install [Docker](https://docs.docker.com/get-docker/).
 
-#### Using Docker Compose
+### Using Docker Compose
 
 You can run using [docker-compose](https://docs.docker.com/compose/).
 
@@ -23,11 +23,13 @@ $ docker-compose up -d
 ```
 Docker compose will create the containers (API and Postgres), run application and auto create the Database structure.
 
-#### The API
+### The API
 The project will be running at
 [http://localhost:4000](http://localhost:4000)
 
 You can use [Postman](https://www.postman.com/) importing te collection available in folder _resources/DOCK API_postman_collection.json_ or requesting to following end-points:
+
+> The requested person for tests can be found on postman collection
 
 Type | End-point                             | Description
 ---- | ------------------------------------- | ------
@@ -40,6 +42,14 @@ POST | /account                              | Create an account providing JSON 
 PATCH| /account/status/:accountId/:newStatus | Used to activate or deactivate an account. Send newStatus as 0 or 1
 POST | /transaction/:type                    | Types are 'deposit' or 'withdraw' transaction. Provides JSON body { idConta, valor }
 
+
+## Testing
+
+The tests was implemented using [Jest](https://jestjs.io/), to run use:
+```sh
+$ npm test
+```
+Jest will show tests and all file coverage.
 
 ## Arquitecture
 

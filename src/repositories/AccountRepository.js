@@ -23,7 +23,6 @@ export default class AccountRepository {
   }
 
   async updateField (accountId, data) {
-    console.log(data)
     return await this.accounts.update({
       where: { idConta: Number(accountId) },
       data: data

@@ -37,9 +37,7 @@ export default class AccountService {
   async validateWithdrawLimit (account) {
     const { idConta, limiteSaqueDiario } = account
     const sum = await this.transactionRepository.getTodayTotalWithdraw(idConta)
-    if (sum >= limiteSaqueDiario) {
-      throw new Error(`Daily withdraw limit ${limiteSaqueDiario} has been reached`)
-    }
+    if (sum >= limiteSaqueDiario) throw new Error(`Daily withdraw limit ${limiteSaqueDiario} has been reached`)
   }
 
   async transaction (payload, type) {
