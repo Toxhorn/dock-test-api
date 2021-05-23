@@ -11,7 +11,7 @@ export default class AccountService {
     this.transactionRepository = new TransactionRepository()
   }
 
-  async validate (object) {
+  validate (object) {
     const validateMoney = (value, helper) => {
       const isValid = validationUtils.money(value)
       if (!isValid) return helper.message(helper.state.path + ' must be a monetary value')
@@ -25,25 +25,32 @@ export default class AccountService {
 
     const { error } = schema.validate(object)
     if (error) throw new Error(error)
+  }
 
-    // Check if account exists
-    const accountExists = await this.accountRepository.findByPerson(object.idConta)
-    if (!accountExists) throw new Error(`Account ${object.idConta} not found`)
-    if (!accountExists.flagAtivo) throw new Error(`Operation not allowed ${object.idConta} is blocked`)
-    return accountExists
+  async validateAccount (account) {
+    if (!account) throw new Error('Account not found')
+    const { idConta, flagAtivo } = account
+    // Check if account exists and is active
+    if (!flagAtivo) throw new Error(`Operation not allowed account ${idConta} is blocked`)
+  }
+
+  async validateWithdrawLimit (account) {
+    const { idConta, limiteSaqueDiario } = account
+    const sum = await this.transactionRepository.getTodayTotalWithdraw(idConta)
+    if (sum >= limiteSaqueDiario) {
+      throw new Error(`Daily withdraw limit ${limiteSaqueDiario} has been reached`)
+    }
   }
 
   async transaction (payload, type) {
-    if (!['deposit', 'withdraw'].includes(type)) throw new Error('Valid transactions are deposit or withdraw')
-    const previousAccount = await this.validate(payload)
-    previousAccount.saldo = parseFloat(previousAccount.saldo)
-    previousAccount.limiteSaqueDiario = parseFloat(previousAccount.limiteSaqueDiario)
+    this.validate(payload)
 
-    const sum = await this.transactionRepository.getTodayTotalWithdraw(payload.idConta)
-    console.log('aaaaaa', sum)
-    if (type === 'withdraw' && sum > previousAccount.limiteSaqueDiario) {
-      throw new Error(`Daily withdraw limit ${previousAccount.limiteSaqueDiario} has been reached`)
-    }
+    const account = await this.accountRepository.findOne(payload.idConta)
+    await this.validateAccount(account)
+    if (type === 'withdraw') await this.validateWithdrawLimit(account)
+
+    account.saldo = parseFloat(account.saldo)
+    account.limiteSaqueDiario = parseFloat(account.limiteSaqueDiario)
 
     // Deposit type is 1 and withdraw type is 0
     payload.tipoTransacao = type === 'deposit' ? 1 : 0
@@ -51,13 +58,13 @@ export default class AccountService {
     await this.transactionRepository.create(payload)
 
     let newTotal
-    if (type === 'deposit') newTotal = previousAccount.saldo + payload.valor
-    else newTotal = previousAccount.saldo - payload.valor
+    if (type === 'deposit') newTotal = account.saldo + payload.valor
+    else newTotal = account.saldo - payload.valor
 
-    const newAccount = await this.accountRepository.updateTotal(payload.idConta, newTotal)
+    const newAccount = await this.accountRepository.updateField(payload.idConta, { saldo: newTotal })
 
     return {
-      saldoAnterior: parseFloat(previousAccount.saldo),
+      saldoAnterior: parseFloat(account.saldo),
       novoSaldo: parseFloat(newAccount.saldo)
     }
   }

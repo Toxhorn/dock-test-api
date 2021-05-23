@@ -12,6 +12,26 @@ export default class AccountRepository {
     return await this.transactions.create({ data: transaction })
   }
 
+  async getTransactionsByAccount (accountId, params) {
+    let filter = {}
+    const { iniDate, endDate } = params
+
+    if (iniDate && endDate) {
+      filter = {
+        dataTransacao: {
+          gt: moment(iniDate).startOf('day').toISOString(),
+          lt: moment(endDate).endOf('day').toISOString()
+        }
+      }
+    }
+
+    return await this.transactions.findMany({
+      where: Object.assign(filter, {
+        idConta: Number(accountId)
+      })
+    })
+  }
+
   async getTodayTotalWithdraw (accountId) {
     const aggregation = await this.transactions.groupBy({
       by: ['idConta'],
@@ -27,6 +47,6 @@ export default class AccountRepository {
         valor: true
       }
     })
-    return aggregation[0]._sum.valor
+    return aggregation[0] ? aggregation[0]._sum.valor : 0
   }
 }

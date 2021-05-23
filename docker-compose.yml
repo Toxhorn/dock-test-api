@@ -1,4 +1,4 @@
-version: "3"
+version: "3.9"
 
 services:
   db:
@@ -11,13 +11,16 @@ services:
       - "5432:5432"
     volumes:
       - ./data/postgres:/var/lib/postgresql/data
+    healthcheck:
+      test: nc -z localhost 5432
 
   web:
     container_name: dock-api
     image: node:14-alpine
     working_dir: /dock-api
     depends_on:
-      - "db"
+      db:
+        condition: service_started 
     volumes:
       - ./:/dock-api
     command: sh ./post-install.sh

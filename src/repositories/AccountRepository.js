@@ -22,10 +22,11 @@ export default class AccountRepository {
     return await this.accounts.create({ data: account })
   }
 
-  async updateTotal (accountId, total) {
+  async updateField (accountId, data) {
+    console.log(data)
     return await this.accounts.update({
-      where: { idConta: accountId },
-      data: { saldo: total }
+      where: { idConta: Number(accountId) },
+      data: data
     })
   }
 }

@@ -5,7 +5,8 @@
   "type": "module",
   "scripts": {
     "start": "node src/app.js",
-    "start-dev": "nodemon src/app.js"
+    "start-dev": "nodemon src/app.js",
+    "seed": "prisma db seed --preview-feature"
   },
   "dependencies": {
     "@prisma/client": "^2.23.0",

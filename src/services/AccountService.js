@@ -4,11 +4,13 @@ import moment from 'moment'
 import validationUtils from '../utils/validationUtils.js'
 import PersonRepository from '../repositories/PersonRepository.js'
 import AccountRepository from '../repositories/AccountRepository.js'
+import TransactionRepository from '../repositories/TransactionRepository.js'
 
 export default class AccountService {
   constructor () {
     this.personRepository = new PersonRepository()
     this.accountRepository = new AccountRepository()
+    this.transactionRepository = new TransactionRepository()
   }
 
   validate (object) {
@@ -30,14 +32,31 @@ export default class AccountService {
     if (error) throw new Error(error)
   }
 
-  async getOne (id) {
-    const result = await this.accountRepository.findOne(id)
+  async getExtract (accountId, params) {
+    const { iniDate, endDate } = params
+    if (iniDate && !validationUtils.date(iniDate)) throw new Error('Param iniDate must be a valid date')
+    if (endDate && !validationUtils.date(endDate)) throw new Error('Param endDate must be a valid date')
 
-    if (!result) throw new Error(`Cannot find an account with id ${id}`)
+    const result = await this.accountRepository.findOne(accountId)
+    if (!result) throw new Error(`Cannot find an account with id ${accountId}`)
+
+    result.extrato = await this.transactionRepository.getTransactionsByAccount(accountId, params)
+    return result
+  }
+
+  async getOne (accountId) {
+    const result = await this.accountRepository.findOne(accountId)
+    if (!result) throw new Error(`Cannot find an account with id ${accountId}`)
 
     result.saldo = parseFloat(result.saldo)
     result.limiteSaqueDiario = parseFloat(result.limiteSaqueDiario)
     return result
+  }
+
+  async changeStatus (accountId, status) {
+    const result = await this.accountRepository.findOne(accountId)
+    if (!result) throw new Error(`Cannot find an account with id ${accountId}`)
+    return this.accountRepository.updateField(accountId, { flagAtivo: status })
   }
 
   async create (account) {
